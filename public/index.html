@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Simplifié</title>
+</head>
+<body>
+  <h1>Chat Simplifié</h1>
+  <input id="username" placeholder="Votre nom" />
+  <input id="message" placeholder="Tapez un message" />
+  <button onclick="sendMessage()">Envoyer</button>
+
+  <h2>Messages</h2>
+  <ul id="messages"></ul>
+
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:3000');
+
+    // Réception des messages diffusés par le serveur
+    socket.on('receiveMessage', (data) => {
+      const { sender, message } = data;
+      const li = document.createElement('li');
+      li.textContent = `${sender}: ${message}`;
+      document.getElementById('messages').appendChild(li);
+    });
+
+    // Envoi d'un message au serveur
+    function sendMessage() {
+      const sender = document.getElementById('username').value;
+      const message = document.getElementById('message').value;
+
+      if (sender && message) {
+        socket.emit('sendMessage', { sender, message }); // Émet au serveur
+        document.getElementById('message').value = '';
+      } else {
+        alert('Veuillez entrer votre nom et un message.');
+      }
+    }
+  </script>
+</body>
+</html>
